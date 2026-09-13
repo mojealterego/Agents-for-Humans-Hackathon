@@ -10,15 +10,19 @@ The repository contains:
 
 - deterministic local signal ingestion;
 - evidence-backed analysis;
+- explicit `evidence_quality` scoring rather than misleading model-confidence semantics;
 - explicit output verification before promotion;
 - risk classification through a model-independent policy;
 - explicit decision requests for consequential actions;
 - single-use human decision lifecycle;
+- SHA-256 payload fingerprint binding at approval;
+- policy fingerprint binding at approval;
+- rejection of payload substitution and policy drift before execution recording;
 - tamper-evident, hash-chained audit events;
 - a background heartbeat abstraction;
 - CLI and one-command demo flow;
 - automated regression tests;
-- a Strands/Bedrock integration surface.
+- a Strands/Bedrock integration surface with a deterministic read-only tool.
 
 ## 3. What is architecture / roadmap
 
@@ -44,7 +48,7 @@ Run:
 python -m cognisync --pretty
 ```
 
-Show that the system produces a compact, verified brief with evidence without requiring intermediate human supervision.
+Show that the system produces a compact, verified brief with evidence and explicit evidence quality without requiring intermediate human supervision.
 
 ### 2:00–3:20 — Consequence boundary
 
@@ -54,7 +58,7 @@ Run:
 python -m cognisync --demo-gate --pretty
 ```
 
-Show `decision_required` and inspect the decision ID, action, risk, reason, evidence and proposed payload.
+Show `decision_required` and inspect the decision ID, action, risk, reason, evidence, proposed payload and policy fingerprint.
 
 ### 3:20–4:15 — Human authorization
 
@@ -64,7 +68,7 @@ Run:
 python -m cognisync --demo-gate --approve --pretty
 ```
 
-Then inspect the JSONL audit trail. State explicitly that the local demo records authorization but does not claim a real external side effect.
+Then inspect the JSONL audit trail. Show that authorization captures a payload fingerprint and that the local demo does not claim a real external side effect.
 
 ### 4:15–5:00 — Why it matters
 
@@ -87,6 +91,8 @@ The suite covers:
 - critical unknown-action handling;
 - single-use decision lifecycle;
 - execution only after approval;
+- payload substitution rejection;
+- policy-drift rejection;
 - verification failures;
 - audit-chain integrity and tamper detection.
 
