@@ -23,14 +23,14 @@ flowchart TB
     N[Notes / Meeting Artifacts]
   end
   subgraph ToolPlane[Tool & Integration Plane]
-    M[MCP Adapters]
+    M[Read-only / narrowly scoped tools]
     G[Governed Gateway]
   end
   subgraph Cognition[CogniSync Cognition Plane]
     S[Supervisor Agent\nStrands]
     X[Bounded Specialist Agents\nA2A]
     V[Evidence / Provenance]
-    R[Consequence Policy]
+    R[Deterministic Consequence Policy]
   end
   subgraph State[State Plane]
     STM[Session Context]
@@ -58,7 +58,7 @@ flowchart TB
   R -->|medium| HITL
   R -->|high| HITL
   R -->|critical| BL
-  HITL -->|approved| O
+  HITL -->|approved + matching payload/policy| O
   O -->|confirmed| A
   BG --> A
   HITL --> A
@@ -66,6 +66,8 @@ flowchart TB
   BG --> OUT[Decision-ready Brief]
   HITL --> OUT
 ```
+
+The **capability firewall** is the architectural boundary between model reasoning and consequential tools: model output can propose an action, but only deterministic policy can classify its consequence, and only an explicit human decision can authorize high/critical execution.
 
 ## 3. Separation of concerns
 
@@ -81,7 +83,7 @@ This prevents a correct model inference from being treated as automatic authoriz
 
 Strands is the orchestration layer. It owns the agent loop, model interaction and tool use. The deterministic safety policy remains outside the model so changing models does not silently change authorization rules.
 
-The live adapter is intentionally narrow in `cognisync.agent`, while the local engine remains deterministic and judgeable.
+The live adapter is intentionally narrow in `cognisync.agent`. Its included signal-inspection tool is deterministic and read-only: it performs no writes, sends, publishes, record changes or external service calls. Consequential connectors remain behind the capability firewall.
 
 ## 5. Memory layer
 
@@ -113,7 +115,7 @@ The supervisor delegates narrow tasks, preserves evidence continuity and remains
 | High | send, publish, modify records, payment | approval |
 | Critical | unknown, destructive, privilege escalation | block + explicit decision |
 
-The local implementation lives in `cognisync/policy.py` and is tested independently.
+The local implementation lives in `cognisync/policy.py` and is tested independently. Each gated decision records a stable policy fingerprint so an authorization cannot silently cross a changed policy boundary.
 
 ## 9. Audit and provenance
 
@@ -121,9 +123,9 @@ Meaningful workflow transitions generate machine-readable audit events. The loca
 
 The conceptual correlation path is:
 
-`run → analysis → evidence → policy → decision → connector outcome`
+`run → analysis → evidence → policy(hash) → decision(payload hash) → connector outcome`
 
-Production telemetry should preserve a stable run/correlation identifier across distributed components.
+The decision layer binds human approval to the exact proposed payload and the policy fingerprint active when the decision was created. Production telemetry should preserve a stable run/correlation identifier across distributed components.
 
 ## 10. Execution and failure semantics
 
@@ -136,7 +138,9 @@ The design explicitly handles:
 - malformed tool result — do not report completion;
 - ambiguous external outcome — remain non-success until trusted confirmation;
 - prompt injection — treat external content as untrusted data, never authority;
-- decision replay — reject reuse of a resolved decision.
+- decision replay — reject reuse of a resolved decision;
+- payload substitution — reject execution when the approved payload fingerprint no longer matches;
+- policy drift — reject execution when the decision's policy fingerprint differs from the active policy.
 
 The production system must model execution as:
 
