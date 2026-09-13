@@ -40,6 +40,7 @@ class DecisionGate:
             risk=decision.risk.value,
             evidence_count=len(decision.evidence),
             payload_hash=payload_fingerprint(decision.proposed_payload),
+            policy_hash=decision.policy_hash,
         )
         return decision
 
@@ -64,6 +65,7 @@ class DecisionGate:
             risk=decision.risk.value,
             actor=actor,
             payload_hash=payload_fingerprint(decision.proposed_payload),
+            policy_hash=decision.policy_hash,
         )
         message = (
             f"Human approval recorded for {decision.action}. External execution may proceed through a trusted connector."
@@ -83,6 +85,8 @@ class DecisionGate:
         """Record one connector-confirmed execution after a separately approved decision."""
         if decision.status is not DecisionStatus.APPROVED:
             raise ValueError("Only an approved decision may be recorded as executed")
+        if decision.policy_hash != self.policy.fingerprint:
+            raise ValueError("Decision was authorized under a different policy")
         current_hash = payload_fingerprint(decision.proposed_payload)
         if decision.authorized_payload_hash != current_hash:
             raise ValueError("Approved payload was modified after human authorization")
@@ -95,4 +99,5 @@ class DecisionGate:
             connector=connector,
             external_reference=external_reference,
             payload_hash=current_hash,
+            policy_hash=decision.policy_hash,
         )
