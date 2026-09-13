@@ -20,8 +20,12 @@ class AutonomyPolicy:
 
     @property
     def fingerprint(self) -> str:
-        """Stable hash of the authorization rules used for a decision."""
-        return policy_fingerprint(self.safe_actions, self.approval_actions)
+        """Stable hash of authorization rules and capability semantics."""
+        capability_rules = {
+            name: (capability.risk.value, capability.requires_human, capability.external_side_effect)
+            for name, capability in CAPABILITIES.items()
+        }
+        return policy_fingerprint(self.safe_actions, self.approval_actions, capability_rules)
 
     def classify(self, action: str) -> RiskLevel:
         normalized = self.normalize(action)
