@@ -51,7 +51,7 @@ def analyze_items(items: list[ProjectItem]) -> tuple[list[Insight], list[str]]:
         title="Decision-ready project signal",
         summary=summary,
         evidence=evidence,
-        confidence=evidence_quality,
+        evidence_quality=evidence_quality,
         recommended_action="Review the evidence-backed brief; approve only consequential external actions.",
     )
     return [insight], evidence
