@@ -11,13 +11,20 @@ from typing import Any
 class AuditLog:
     """Append-only, hash-chained JSONL audit trail."""
 
+    SCHEMA_VERSION = 1
+
     def __init__(self, path: str | Path = "data/audit.jsonl") -> None:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._previous_hash = self._load_previous_hash()
 
     def record(self, event: str, **fields: Any) -> dict[str, Any]:
+        if self.path.exists():
+            valid, _, error = self.verify_integrity()
+            if not valid:
+                raise RuntimeError(f"Refusing to append to an invalid audit log: {error}")
         payload = {
+            "schema_version": self.SCHEMA_VERSION,
             "event_id": str(uuid.uuid4()),
             "timestamp": datetime.now(UTC).isoformat(),
             "event": event,
@@ -47,6 +54,8 @@ class AuditLog:
                 return False, checked, f"line {line_no}: invalid JSON"
             if not isinstance(record, dict):
                 return False, checked, f"line {line_no}: record is not an object"
+            if record.get("schema_version") != self.SCHEMA_VERSION:
+                return False, checked, f"line {line_no}: unsupported schema_version"
 
             expected_previous = record.get("prev_hash", "")
             if expected_previous != previous:
@@ -74,11 +83,11 @@ class AuditLog:
     def _load_previous_hash(self) -> str:
         if not self.path.exists():
             return ""
+        valid, _, _ = self.verify_integrity()
+        if not valid:
+            raise RuntimeError("Existing audit log is invalid; repair or replace it before recording events")
         lines = [line for line in self.path.read_text(encoding="utf-8").splitlines() if line.strip()]
         if not lines:
             return ""
-        try:
-            payload = json.loads(lines[-1])
-        except json.JSONDecodeError:
-            return ""
-        return payload.get("event_hash", "") if isinstance(payload, dict) else ""
+        payload = json.loads(lines[-1])
+        return payload["event_hash"]
