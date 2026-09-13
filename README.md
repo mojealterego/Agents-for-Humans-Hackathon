@@ -30,7 +30,7 @@ Routine read/analyze/prepare work can remain autonomous. Consequential operation
 The public prototype is deterministic and runnable without cloud credentials. It demonstrates:
 
 - evidence-backed insight generation;
-- evidence-quality scoring rather than fabricated model confidence;
+- explicit evidence-quality scoring rather than a misleading model-confidence field;
 - verification gates before work is promoted;
 - model-independent autonomy policy;
 - a bounded, read-only Strands custom tool for project-signal inspection;
@@ -112,7 +112,7 @@ The `--approve` path resolves a **local demo decision only**. No real email, pub
                     ┌──────────────▼───────────────┐
                     │ Trusted Connector Boundary   │
                     │ payload fingerprint checked  │
-                    │ policy fingerprint checked  │
+                    │ policy fingerprint checked   │
                     └──────────────┬───────────────┘
                                    │
                     ┌──────────────▼───────────────┐
