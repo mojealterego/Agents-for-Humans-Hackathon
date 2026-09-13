@@ -22,6 +22,14 @@ class DecisionGate:
         self.policy = policy
         self.audit = audit
 
+    def _validate_policy_binding(self, decision: DecisionRequest) -> None:
+        if decision.policy_hash is None:
+            decision.policy_hash = self.policy.fingerprint
+        if decision.policy_hash != self.policy.fingerprint:
+            raise ValueError("Decision was authorized under a different policy")
+        if self.policy.classify(decision.action) is not decision.risk:
+            raise ValueError("Decision risk no longer matches the active policy")
+
     def request(
         self,
         *,
@@ -52,6 +60,7 @@ class DecisionGate:
     ) -> DecisionResolution:
         if decision.status is not DecisionStatus.PENDING:
             raise ValueError(f"Decision {decision.decision_id} is already {decision.status.value}")
+        self._validate_policy_binding(decision)
 
         status = DecisionStatus.APPROVED if approved else DecisionStatus.REJECTED
         event = "decision.approved" if approved else "decision.rejected"
@@ -85,8 +94,7 @@ class DecisionGate:
         """Record one connector-confirmed execution after a separately approved decision."""
         if decision.status is not DecisionStatus.APPROVED:
             raise ValueError("Only an approved decision may be recorded as executed")
-        if decision.policy_hash != self.policy.fingerprint:
-            raise ValueError("Decision was authorized under a different policy")
+        self._validate_policy_binding(decision)
         current_hash = payload_fingerprint(decision.proposed_payload)
         if decision.authorized_payload_hash != current_hash:
             raise ValueError("Approved payload was modified after human authorization")
