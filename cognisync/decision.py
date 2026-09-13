@@ -76,9 +76,11 @@ class DecisionGate:
         connector: str,
         external_reference: str | None = None,
     ) -> None:
-        """Record connector-confirmed execution after a separately approved decision."""
+        """Record one connector-confirmed execution after a separately approved decision."""
         if decision.status is not DecisionStatus.APPROVED:
             raise ValueError("Only an approved decision may be recorded as executed")
+
+        decision.status = DecisionStatus.EXECUTED if success else DecisionStatus.FAILED
         self.audit.record(
             "action.executed" if success else "action.failed",
             decision_id=decision.decision_id,
