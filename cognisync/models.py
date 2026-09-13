@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
@@ -18,6 +20,11 @@ class DecisionStatus(StrEnum):
     REJECTED = "rejected"
     EXECUTED = "executed"
     FAILED = "failed"
+
+
+def payload_fingerprint(payload: dict[str, Any]) -> str:
+    canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 @dataclass(slots=True)
@@ -47,6 +54,7 @@ class DecisionRequest:
     evidence: list[str]
     proposed_payload: dict[str, Any]
     status: DecisionStatus = DecisionStatus.PENDING
+    authorized_payload_hash: str | None = None
 
 
 @dataclass(slots=True)
