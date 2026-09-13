@@ -43,7 +43,7 @@ def test_decision_is_single_use(tmp_path: Path) -> None:
         gate.resolve(decision, approved=True, actor="reviewer")
 
 
-def test_execution_requires_approval(tmp_path: Path) -> None:
+def test_execution_requires_approval_and_is_terminal(tmp_path: Path) -> None:
     audit = AuditLog(tmp_path / "audit.jsonl")
     gate = DecisionGate(DEFAULT_POLICY, audit)
     decision = gate.request(
@@ -64,3 +64,26 @@ def test_execution_requires_approval(tmp_path: Path) -> None:
         connector="demo",
         external_reference="simulated-001",
     )
+    assert decision.status is DecisionStatus.EXECUTED
+
+    with pytest.raises(ValueError):
+        gate.record_execution(decision, success=True, connector="demo")
+
+
+def test_failed_execution_is_terminal(tmp_path: Path) -> None:
+    audit = AuditLog(tmp_path / "audit.jsonl")
+    gate = DecisionGate(DEFAULT_POLICY, audit)
+    decision = gate.request(
+        action="send_external_message",
+        reason="external communication",
+        evidence=["source-1"],
+        payload={},
+    )
+    assert decision is not None
+
+    gate.resolve(decision, approved=True)
+    gate.record_execution(decision, success=False, connector="demo")
+    assert decision.status is DecisionStatus.FAILED
+
+    with pytest.raises(ValueError):
+        gate.record_execution(decision, success=True, connector="demo")
