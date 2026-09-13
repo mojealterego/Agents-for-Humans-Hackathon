@@ -33,7 +33,7 @@ python scripts/repo_quality_check.py
 python -m cognisync --pretty
 ```
 
-Expected behavior: local project inputs are processed without an approval prompt; useful insights include source evidence; no consequential effect is executed.
+Expected behavior: local project inputs are processed without an approval prompt; useful insights include source evidence and deterministic evidence-quality scoring; no consequential effect is executed.
 
 ### 4. Trigger the consequence boundary
 
@@ -49,9 +49,9 @@ Expected behavior: a `decision_required` result exposes the capability, risk, re
 python -m cognisync --demo-gate --approve --pretty
 ```
 
-Expected behavior: the decision changes from `pending` to `approved`; the audit stream records the transition; no external side effect is claimed.
+Expected behavior: the decision changes from `pending` to `approved`; the approval is bound to a SHA-256 fingerprint of the exact proposed payload; the audit stream records the transition; no external side effect is claimed.
 
-For an integration that actually calls a trusted connector, execution must be recorded only after connector confirmation. A successful or failed execution is terminal and cannot be replayed through the same decision object.
+For an integration that actually calls a trusted connector, execution must be recorded only after connector confirmation. If the approved payload changes, execution is rejected. A successful or failed execution is terminal and cannot be replayed through the same decision object.
 
 Inspect:
 
@@ -65,12 +65,15 @@ The audit stream is hash chained and independently verifiable through `AuditLog.
 
 - deterministic local project analysis;
 - evidence-backed insight objects;
+- deterministic evidence-quality scoring rather than fabricated model confidence;
 - verification contract;
 - model-independent policy classification;
 - fail-closed unknown capabilities;
 - explicit human decision request;
 - terminal decision lifecycle: pending → approved/rejected → executed/failed;
+- payload-bound human authorization;
 - single-use decision resolution and execution recording;
+- deterministic read-only Strands signal-inspection tool;
 - tamper-evident audit chain;
 - automated positive and negative-path tests;
 - validated AWS region/model configuration for the Strands/Bedrock adapter.
@@ -91,9 +94,11 @@ The Strands/Bedrock adapter and AgentCore-oriented architecture describe the int
 2. What happens when the requested capability is unknown? → critical risk and approval required.
 3. Can approval be reused? → no; resolved decisions cannot be resolved again.
 4. Can an executed decision be replayed? → no; execution is terminal.
-5. Can the model's confidence authorize a side effect? → no; policy is model-independent.
-6. Can a timeout be treated as success? → no; production connectors must require definitive confirmation.
-7. Can the audit history be silently edited? → edits break hash-chain verification.
+5. Can an approved payload be swapped before execution? → no; its fingerprint must match the payload fingerprint captured at approval.
+6. Can the model's confidence authorize a side effect? → no; policy is model-independent.
+7. Can the model-facing tool surface directly perform a side effect? → the included signal-inspection tool is explicitly read-only; consequential connectors remain outside the model's authorization authority.
+8. Can a timeout be treated as success? → no; production connectors must require definitive confirmation.
+9. Can the audit history be silently edited? → edits break hash-chain verification.
 
 ## Evidence map
 
@@ -105,7 +110,7 @@ The Strands/Bedrock adapter and AgentCore-oriented architecture describe the int
 | Verification contract | `cognisync/verification.py` |
 | Audit integrity | `cognisync/audit.py` |
 | Attention metrics | `cognisync/metrics.py` |
-| Strands/Bedrock adapter | `cognisync/agent.py` |
+| Strands/Bedrock adapter + read-only tool | `cognisync/agent.py` |
 | Configuration validation | `cognisync/config.py` |
 | Threat model | `docs/THREAT_MODEL.md` |
 | Research metrics | `docs/EVALUATION_AND_IMPACT_PLAN.md` |
