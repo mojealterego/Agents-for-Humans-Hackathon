@@ -29,10 +29,7 @@ def payload_fingerprint(payload: dict[str, Any]) -> str:
 
 def policy_fingerprint(safe_actions: frozenset[str], approval_actions: frozenset[str]) -> str:
     canonical = json.dumps(
-        {
-            "safe_actions": sorted(safe_actions),
-            "approval_actions": sorted(approval_actions),
-        },
+        {"safe_actions": sorted(safe_actions), "approval_actions": sorted(approval_actions)},
         separators=(",", ":"),
     )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
@@ -52,7 +49,7 @@ class Insight:
     title: str
     summary: str
     evidence: list[str]
-    confidence: float
+    evidence_quality: float
     recommended_action: str
 
 
