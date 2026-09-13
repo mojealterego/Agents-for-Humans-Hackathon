@@ -5,6 +5,7 @@ from pathlib import Path
 
 from cognisync.audit import AuditLog
 from cognisync.engine import CogniSyncEngine
+from cognisync.models import payload_fingerprint
 from cognisync.store import ProjectStore
 
 
@@ -44,8 +45,7 @@ def main() -> None:
         "evidence": gated.decision_request.evidence if gated.decision_request else [],
         "policy_fingerprint": gated.decision_request.policy_hash if gated.decision_request else None,
         "proposed_payload_fingerprint": (
-            __import__("cognisync.models", fromlist=["payload_fingerprint"])
-            .payload_fingerprint(gated.decision_request.proposed_payload)
+            payload_fingerprint(gated.decision_request.proposed_payload)
             if gated.decision_request else None
         ),
         "external_execution": "not_performed",
