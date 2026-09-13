@@ -21,14 +21,14 @@ def verify_insight(insight: Insight) -> VerificationResult:
         failures.append("missing summary")
     if not insight.evidence:
         failures.append("missing evidence")
-    if not 0.0 <= insight.confidence <= 1.0:
-        failures.append("confidence outside [0,1]")
+    if not 0.0 <= insight.evidence_quality <= 1.0:
+        failures.append("evidence quality outside [0,1]")
     if not insight.recommended_action.strip():
         failures.append("missing recommended action")
     return VerificationResult(
         passed=not failures,
         status="passed" if not failures else "failed",
-        checks=("schema", "evidence", "confidence", "actionability"),
+        checks=("schema", "evidence", "evidence_quality", "actionability"),
         failures=tuple(failures),
     )
 
@@ -47,6 +47,6 @@ def verify_insights(insights: list[Insight], evidence: list[str]) -> Verificatio
     return VerificationResult(
         passed=not failures,
         status="passed" if not failures else "failed",
-        checks=("collection", "schema", "evidence", "confidence", "actionability"),
+        checks=("collection", "schema", "evidence", "evidence_quality", "actionability"),
         failures=tuple(failures),
     )
