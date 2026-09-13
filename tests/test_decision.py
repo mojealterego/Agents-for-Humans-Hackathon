@@ -16,6 +16,7 @@ def test_decision_gate_records_rejection(tmp_path) -> None:
     )
     result = gate.resolve(request, approved=False, actor="demo-user")
     assert result.status == "rejected"
+    assert request.policy_hash == DEFAULT_POLICY.fingerprint
     assert "No external effect" in result.message
     lines = (tmp_path / "audit.jsonl").read_text(encoding="utf-8").splitlines()
     assert '"event": "decision.rejected"' in lines[-1]
