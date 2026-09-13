@@ -28,7 +28,7 @@ def main() -> None:
                 "title": insight.title,
                 "summary": insight.summary,
                 "evidence": insight.evidence,
-                "confidence": insight.confidence,
+                "evidence_quality": insight.evidence_quality,
             }
             for insight in background.insights
         ],
@@ -42,6 +42,12 @@ def main() -> None:
         "action": gated.decision_request.action if gated.decision_request else None,
         "risk": gated.decision_request.risk.value if gated.decision_request else None,
         "evidence": gated.decision_request.evidence if gated.decision_request else [],
+        "policy_fingerprint": gated.decision_request.policy_hash if gated.decision_request else None,
+        "proposed_payload_fingerprint": (
+            __import__("cognisync.models", fromlist=["payload_fingerprint"])
+            .payload_fingerprint(gated.decision_request.proposed_payload)
+            if gated.decision_request else None
+        ),
         "external_execution": "not_performed",
     }, indent=2, ensure_ascii=False))
 
@@ -51,6 +57,7 @@ def main() -> None:
         print(json.dumps({
             "decision_id": resolution.request.decision_id,
             "status": resolution.status.value,
+            "authorized_payload_fingerprint": resolution.request.authorized_payload_hash,
             "message": resolution.message,
             "external_execution": "not_performed",
         }, indent=2, ensure_ascii=False))
