@@ -30,16 +30,20 @@ Routine read/analyze/prepare work can remain autonomous. Consequential operation
 The public prototype is deterministic and runnable without cloud credentials. It demonstrates:
 
 - evidence-backed insight generation;
+- evidence-quality scoring rather than fabricated model confidence;
 - verification gates before work is promoted;
 - model-independent autonomy policy;
+- a bounded, read-only Strands custom tool for project-signal inspection;
 - human decision requests for consequential capabilities;
 - single-use approval/rejection transitions;
-- prevention of execution before approval;
-- tamper-evident hash-chained audit events;
+- authorization bound to the exact proposed payload;
+- prevention of execution before approval or after payload modification;
+- tamper-evident, schema-versioned hash-chained audit events;
+- refusal to append to a corrupted audit history;
 - automated tests for positive and failure paths;
 - a local demo that never pretends to perform a real external side effect.
 
-The Strands/Bedrock integration is an adapter and production path, not a claim that cloud resources are already provisioned.
+The Strands/Bedrock integration is an adapter and production path, not a claim that cloud resources are already provisioned. The model can reason and invoke bounded read-only tooling, but it cannot authorize consequential execution.
 
 ## Quick start
 
@@ -71,35 +75,49 @@ The `--approve` path resolves a **local demo decision only**. No real email, pub
 ## Architecture
 
 ```text
-               ┌──────────────────────────────┐
-               │ Model / Reasoning             │
-               │ deterministic or Strands      │
-               └──────────────┬───────────────┘
-                              │
-               ┌──────────────▼───────────────┐
-               │ Tools / MCP / Connectors     │
-               └──────────────┬───────────────┘
-                              │
-               ┌──────────────▼───────────────┐
-               │ Evidence + Context           │
-               └──────────────┬───────────────┘
-                              │
-               ┌──────────────▼───────────────┐
-               │ Verification Contract        │
-               └──────────────┬───────────────┘
-                              │
-               ┌──────────────▼───────────────┐
-               │ Consequence / Policy Gate    │
-               └──────────────┬───────────────┘
-                              │
-               ┌──────────────▼───────────────┐
-               │ Human Decision               │
-               └──────────────┬───────────────┘
-                              │
-               ┌──────────────▼───────────────┐
-               │ Connector Execution + Audit  │
-               └──────────────────────────────┘
+                    ┌──────────────────────────────┐
+                    │ Strands / Bedrock Reasoning   │
+                    │ proposes, interprets, plans  │
+                    └──────────────┬───────────────┘
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │ Bounded Read-Only Tools      │
+                    │ project-signal inspection    │
+                    └──────────────┬───────────────┘
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │ Evidence + Context           │
+                    │ provenance / source signals  │
+                    └──────────────┬───────────────┘
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │ Deterministic Verification   │
+                    │ evidence + integrity checks  │
+                    └──────────────┬───────────────┘
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │ Policy / Consequence Gate    │
+                    │ model-independent authority  │
+                    └──────────────┬───────────────┘
+                                   │
+                          consequential only
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │ Human Decision               │
+                    │ approve / reject             │
+                    └──────────────┬───────────────┘
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │ Trusted Connector Boundary   │
+                    │ payload fingerprint checked  │
+                    └──────────────┬───────────────┘
+                                   │
+                    ┌──────────────▼───────────────┐
+                    │ Hash-Chained Audit           │
+                    └──────────────────────────────┘
 ```
+
+The architectural rule is stronger than a prompt instruction: **reasoning is not authorization**. A model output, tool result, or proposed action cannot cross the consequence boundary without deterministic policy evaluation and explicit human resolution.
 
 ## Repository map
 
