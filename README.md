@@ -7,7 +7,8 @@
 **Applicant:** Andrzej Mikulski  
 **Track:** Professional Agents  
 **Primary artifact:** `cognisync/`  
-**Grant proposal:** [`docs/GRANT_PROPOSAL.md`](docs/GRANT_PROPOSAL.md)
+**Grant proposal:** [`docs/GRANT_PROPOSAL_FINAL.md`](docs/GRANT_PROPOSAL_FINAL.md)  
+**Full proposal archive:** [`docs/GRANT_PROPOSAL.md`](docs/GRANT_PROPOSAL.md)
 
 ---
 
@@ -128,7 +129,8 @@ The architectural rule is stronger than a prompt instruction: **reasoning is not
 |---|---|
 | `cognisync/` | Core engine, policy, verification, decision gate, audit and adapters |
 | `tests/` | Executable safety and behavior checks |
-| `docs/GRANT_PROPOSAL.md` | Full professional English grant application |
+| `docs/GRANT_PROPOSAL_FINAL.md` | Submission-ready grant proposal aligned with the hardened prototype |
+| `docs/GRANT_PROPOSAL.md` | Earlier full proposal archive |
 | `docs/CLAIM_LEDGER.md` | Distinguishes implemented behavior from contracts, roadmap and hypotheses |
 | `docs/MILESTONE_ACCEPTANCE.md` | Objective milestone and release acceptance criteria |
 | `docs/EVALUATION_AND_IMPACT_PLAN.md` | Research protocol and measurement plan |
