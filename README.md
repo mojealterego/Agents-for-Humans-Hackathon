@@ -37,7 +37,8 @@ The public prototype is deterministic and runnable without cloud credentials. It
 - human decision requests for consequential capabilities;
 - single-use approval/rejection transitions;
 - authorization bound to the exact proposed payload;
-- prevention of execution before approval or after payload modification;
+- authorization bound to the policy fingerprint active when the decision was created;
+- prevention of execution before approval, after payload modification, or across policy drift;
 - tamper-evident, schema-versioned hash-chained audit events;
 - refusal to append to a corrupted audit history;
 - automated tests for positive and failure paths;
@@ -98,6 +99,7 @@ The `--approve` path resolves a **local demo decision only**. No real email, pub
                     ┌──────────────▼───────────────┐
                     │ Policy / Consequence Gate    │
                     │ model-independent authority  │
+                    │ policy fingerprint           │
                     └──────────────┬───────────────┘
                                    │
                           consequential only
@@ -110,6 +112,7 @@ The `--approve` path resolves a **local demo decision only**. No real email, pub
                     ┌──────────────▼───────────────┐
                     │ Trusted Connector Boundary   │
                     │ payload fingerprint checked  │
+                    │ policy fingerprint checked  │
                     └──────────────┬───────────────┘
                                    │
                     ┌──────────────▼───────────────┐
@@ -117,7 +120,7 @@ The `--approve` path resolves a **local demo decision only**. No real email, pub
                     └──────────────────────────────┘
 ```
 
-The architectural rule is stronger than a prompt instruction: **reasoning is not authorization**. A model output, tool result, or proposed action cannot cross the consequence boundary without deterministic policy evaluation and explicit human resolution.
+The architectural rule is stronger than a prompt instruction: **reasoning is not authorization**. A model output, tool result, or proposed action cannot cross the consequence boundary without deterministic policy evaluation and explicit human resolution. The approval is bound to both the exact payload and the policy fingerprint under which the decision was created.
 
 ## Repository map
 
