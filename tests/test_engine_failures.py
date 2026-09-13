@@ -27,7 +27,7 @@ def test_verification_failure_does_not_promote_candidates(tmp_path: Path, monkey
                 title="Candidate",
                 summary="Unsupported",
                 evidence=[],
-                confidence=0.5,
+                evidence_quality=0.5,
                 recommended_action="Investigate",
             )
         ], []
