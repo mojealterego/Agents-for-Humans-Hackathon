@@ -35,13 +35,18 @@ def measure(result: RunResult) -> AttentionMetrics:
         DecisionStatus.EXECUTED,
         DecisionStatus.FAILED,
     }
+    approved = {
+        DecisionStatus.APPROVED,
+        DecisionStatus.EXECUTED,
+        DecisionStatus.FAILED,
+    }
     return AttentionMetrics(
         human_interventions=1 if resolved else 0,
         evidence_coverage=(evidenced / total) if total else 0.0,
         consequence_gates=1 if decision else 0,
         autonomous_insights=total,
         decision_requests=1 if decision else 0,
-        approved_decisions=1 if status in {DecisionStatus.APPROVED, DecisionStatus.EXECUTED, DecisionStatus.FAILED} else 0,
+        approved_decisions=1 if status in approved else 0,
         rejected_decisions=1 if status is DecisionStatus.REJECTED else 0,
         executed_actions=1 if status is DecisionStatus.EXECUTED else 0,
         failed_actions=1 if status is DecisionStatus.FAILED else 0,
