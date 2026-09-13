@@ -14,7 +14,11 @@ _PENDING_SIGNALS = ("pending", "needs", "remaining", "review")
 
 
 def _tokens(text: str) -> list[str]:
-    return [token for token in re.findall(r"[a-zA-Z][a-zA-Z0-9_-]{3,}", text.lower()) if token not in _STOPWORDS]
+    return [
+        token
+        for token in re.findall(r"[a-zA-Z][a-zA-Z0-9_-]{3,}", text.lower())
+        if token not in _STOPWORDS
+    ]
 
 
 def _evidence_quality(items: list[ProjectItem], evidence: list[str]) -> float:
