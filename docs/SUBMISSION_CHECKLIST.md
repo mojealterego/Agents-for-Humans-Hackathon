@@ -13,10 +13,14 @@
 - [x] Explicit human decision gate
 - [x] Fail-closed unknown-capability policy
 - [x] Evidence and provenance model
+- [x] Explicit evidence-quality semantics
 - [x] Verification contract
 - [x] Hash-chained audit trail
+- [x] Payload-fingerprint-bound authorization
+- [x] Policy-fingerprint-bound authorization
+- [x] Policy-drift and payload-substitution negative paths
 - [x] Judgeable five-minute demo scenario
-- [x] English grant proposal
+- [x] Final English grant proposal
 - [x] Threat model
 - [x] Evaluation and impact plan
 - [x] Claim ledger
@@ -41,12 +45,15 @@
 
 1. Background work happens without continuous human supervision.
 2. Important outputs retain evidence.
-3. A consequential capability crosses an explicit policy boundary.
-4. Approval is a distinct state transition.
-5. A resolved decision cannot be reused through the decision gate.
-6. Unknown capabilities fail closed.
-7. Audit integrity can detect tampering.
-8. No external completion is claimed without trusted connector confirmation.
+3. Evidence quality is explicitly distinguished from model confidence.
+4. A consequential capability crosses an explicit policy boundary.
+5. Approval is a distinct state transition.
+6. Approval is bound to the exact payload and active policy fingerprint.
+7. Payload substitution and policy drift fail closed.
+8. A resolved decision cannot be reused through the decision gate.
+9. Unknown capabilities fail closed.
+10. Audit integrity can detect tampering.
+11. No external completion is claimed without trusted connector confirmation.
 
 ## Current honest scope
 
