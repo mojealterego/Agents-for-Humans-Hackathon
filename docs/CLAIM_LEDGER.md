@@ -11,7 +11,10 @@ This document separates what the submission **demonstrates now** from what it **
 | Unknown capabilities fail closed as critical. | Implemented | `cognisync/policy.py`, policy and decision-gate tests |
 | Approval is a distinct state transition from preparation. | Implemented | `DecisionStatus`, `DecisionGate.resolve()` |
 | Approved execution must still be connector-confirmed. | Contract | `DecisionGate.record_execution()` records connector confirmation; the local demo performs no external effect. |
+| A resolved or executed decision cannot be reused through the same decision lifecycle. | Implemented | terminal `DecisionStatus` states and `tests/test_decision_gate.py` |
 | Audit events are tamper-evident through hash chaining. | Implemented | `cognisync/audit.py`, audit integrity tests |
+| Attention metrics distinguish an escalation from an actual human intervention. | Implemented | `cognisync/metrics.py`, `tests/test_metrics.py` |
+| Runtime configuration validates region, model identifier and temperature bounds. | Implemented | `cognisync/config.py`, `tests/test_config.py` |
 | Strands/Bedrock is the intended model execution path. | Adapter / roadmap | `cognisync/agent.py`; cloud resources are not claimed as provisioned. |
 | AgentCore Runtime, Memory, Gateway/MCP and bounded A2A can form the production control plane. | Architecture proposal | `docs/ARCHITECTURE.md` and grant proposal; deployment remains future work. |
 | Background-first operation improves useful work per unit of human attention. | Research hypothesis | `docs/EVALUATION_AND_IMPACT_PLAN.md`; requires empirical pilot data. |
