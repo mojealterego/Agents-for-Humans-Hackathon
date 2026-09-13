@@ -49,9 +49,9 @@ Expected behavior: a `decision_required` result exposes the capability, risk, re
 python -m cognisync --demo-gate --approve --pretty
 ```
 
-Expected behavior: the decision changes from `pending` to `approved`; the approval is bound to a SHA-256 fingerprint of the exact proposed payload; the audit stream records the transition; no external side effect is claimed.
+Expected behavior: the decision changes from `pending` to `approved`; the approval is bound to a SHA-256 fingerprint of the exact proposed payload and the active policy fingerprint; the audit stream records the transition; no external side effect is claimed.
 
-For an integration that actually calls a trusted connector, execution must be recorded only after connector confirmation. If the approved payload changes, execution is rejected. A successful or failed execution is terminal and cannot be replayed through the same decision object.
+For an integration that actually calls a trusted connector, execution must be recorded only after connector confirmation. If the approved payload changes, execution is rejected. If the active policy changes, execution is rejected. A successful or failed execution is terminal and cannot be replayed through the same decision object.
 
 Inspect:
 
@@ -72,6 +72,7 @@ The audit stream is hash chained and independently verifiable through `AuditLog.
 - explicit human decision request;
 - terminal decision lifecycle: pending → approved/rejected → executed/failed;
 - payload-bound human authorization;
+- policy-fingerprint-bound human authorization;
 - single-use decision resolution and execution recording;
 - deterministic read-only Strands signal-inspection tool;
 - tamper-evident audit chain;
@@ -95,10 +96,11 @@ The Strands/Bedrock adapter and AgentCore-oriented architecture describe the int
 3. Can approval be reused? → no; resolved decisions cannot be resolved again.
 4. Can an executed decision be replayed? → no; execution is terminal.
 5. Can an approved payload be swapped before execution? → no; its fingerprint must match the payload fingerprint captured at approval.
-6. Can the model's confidence authorize a side effect? → no; policy is model-independent.
-7. Can the model-facing tool surface directly perform a side effect? → the included signal-inspection tool is explicitly read-only; consequential connectors remain outside the model's authorization authority.
-8. Can a timeout be treated as success? → no; production connectors must require definitive confirmation.
-9. Can the audit history be silently edited? → edits break hash-chain verification.
+6. Can an approved decision cross policy drift? → no; its policy fingerprint must match the active authorization policy.
+7. Can model confidence authorize a side effect? → no; authorization is model-independent.
+8. Can the model-facing tool surface directly perform a side effect? → the included signal-inspection tool is explicitly read-only; consequential connectors remain outside the model's authorization authority.
+9. Can a timeout be treated as success? → no; production connectors must require definitive confirmation.
+10. Can the audit history be silently edited? → edits break hash-chain verification.
 
 ## Evidence map
 
