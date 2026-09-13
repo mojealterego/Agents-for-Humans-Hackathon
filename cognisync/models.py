@@ -16,6 +16,8 @@ class DecisionStatus(StrEnum):
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
+    EXECUTED = "executed"
+    FAILED = "failed"
 
 
 @dataclass(slots=True)
