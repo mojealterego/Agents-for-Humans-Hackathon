@@ -87,3 +87,21 @@ def test_failed_execution_is_terminal(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError):
         gate.record_execution(decision, success=True, connector="demo")
+
+
+def test_modified_payload_cannot_use_previous_approval(tmp_path: Path) -> None:
+    audit = AuditLog(tmp_path / "audit.jsonl")
+    gate = DecisionGate(DEFAULT_POLICY, audit)
+    decision = gate.request(
+        action="send_external_message",
+        reason="external communication",
+        evidence=["source-1"],
+        payload={"recipient": "alice", "message": "approved"},
+    )
+    assert decision is not None
+
+    gate.resolve(decision, approved=True)
+    decision.proposed_payload["recipient"] = "mallory"
+
+    with pytest.raises(ValueError, match="payload was modified"):
+        gate.record_execution(decision, success=True, connector="demo")
