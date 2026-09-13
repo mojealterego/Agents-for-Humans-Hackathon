@@ -6,12 +6,15 @@ This document separates what the submission **demonstrates now** from what it **
 |---|---|---|
 | CogniSync can process local project inputs without a human operating a dashboard continuously. | Implemented | `cognisync/engine.py`, local CLI demo, `tests/test_engine.py` |
 | Important insights must carry evidence. | Implemented | `cognisync/verification.py`, `tests/test_verification.py` |
+| Insight scoring is evidence quality, not model confidence. | Implemented | `cognisync/analysis.py`; deterministic evidence-quality calculation; analysis tests |
 | Safe preparation capabilities remain autonomous under the default policy. | Implemented | `cognisync/policy.py`, `tests/test_policy.py` |
 | Consequential capabilities require an explicit decision request. | Implemented | `cognisync/decision.py`, `tests/test_decision_gate.py` |
 | Unknown capabilities fail closed as critical. | Implemented | `cognisync/policy.py`, policy and decision-gate tests |
 | Approval is a distinct state transition from preparation. | Implemented | `DecisionStatus`, `DecisionGate.resolve()` |
+| Human approval is cryptographically bound to the exact proposed payload. | Implemented | `payload_fingerprint()`, `authorized_payload_hash`, payload-mutation negative test |
 | Approved execution must still be connector-confirmed. | Contract | `DecisionGate.record_execution()` records connector confirmation; the local demo performs no external effect. |
 | A resolved or executed decision cannot be reused through the same decision lifecycle. | Implemented | terminal `DecisionStatus` states and `tests/test_decision_gate.py` |
+| The model-facing Strands tool surface includes a deterministic read-only signal inspector. | Implemented | `cognisync/agent.py`, `tests/test_agent.py`; tool performs no writes or external calls |
 | Audit events are tamper-evident through hash chaining. | Implemented | `cognisync/audit.py`, audit integrity tests |
 | Attention metrics distinguish an escalation from an actual human intervention. | Implemented | `cognisync/metrics.py`, `tests/test_metrics.py` |
 | Runtime configuration validates region, model identifier and temperature bounds. | Implemented | `cognisync/config.py`, `tests/test_config.py` |
