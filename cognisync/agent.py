@@ -26,6 +26,7 @@ def build_strands_agent(settings: Settings | None = None) -> Any:
     settings = settings or Settings.from_env()
     model = BedrockModel(
         model_id=settings.model_id,
+        region_name=settings.region,
         temperature=settings.temperature,
         streaming=True,
     )
