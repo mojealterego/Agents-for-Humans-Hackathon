@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
 .env
 .env.*
 !.env.example
@@ -13,6 +15,9 @@ coverage.xml
 htmlcov/
 .terraform/
 terraform.tfstate*
+build/
+dist/
+*.egg-info/
 data/audit.jsonl
 data/*audit*.jsonl
 data/*.tmp
