@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Final
 
 from .capabilities import CAPABILITIES
-from .models import DecisionRequest, RiskLevel
+from .models import DecisionRequest, RiskLevel, policy_fingerprint
 
 
 @dataclass(frozen=True, slots=True)
@@ -17,6 +17,11 @@ class AutonomyPolicy:
 
     safe_actions: frozenset[str]
     approval_actions: frozenset[str]
+
+    @property
+    def fingerprint(self) -> str:
+        """Stable hash of the authorization rules used for a decision."""
+        return policy_fingerprint(self.safe_actions, self.approval_actions)
 
     def classify(self, action: str) -> RiskLevel:
         normalized = self.normalize(action)
@@ -52,6 +57,7 @@ class AutonomyPolicy:
             risk=risk,
             evidence=list(evidence),
             proposed_payload=dict(payload),
+            policy_hash=self.fingerprint,
         )
 
     @staticmethod
