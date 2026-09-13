@@ -27,6 +27,17 @@ def payload_fingerprint(payload: dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def policy_fingerprint(safe_actions: frozenset[str], approval_actions: frozenset[str]) -> str:
+    canonical = json.dumps(
+        {
+            "safe_actions": sorted(safe_actions),
+            "approval_actions": sorted(approval_actions),
+        },
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 @dataclass(slots=True)
 class ProjectItem:
     id: str
@@ -55,6 +66,7 @@ class DecisionRequest:
     proposed_payload: dict[str, Any]
     status: DecisionStatus = DecisionStatus.PENDING
     authorized_payload_hash: str | None = None
+    policy_hash: str | None = None
 
 
 @dataclass(slots=True)
