@@ -23,7 +23,7 @@ def _serialize(result: Any) -> dict[str, Any]:
                 "title": insight.title,
                 "summary": insight.summary,
                 "evidence": insight.evidence,
-                "confidence": insight.confidence,
+                "evidence_quality": insight.evidence_quality,
                 "recommended_action": insight.recommended_action,
             }
             for insight in result.insights
@@ -40,6 +40,8 @@ def _serialize(result: Any) -> dict[str, Any]:
             "evidence": decision.evidence,
             "proposed_payload": decision.proposed_payload,
             "decision_status": decision.status.value,
+            "policy_fingerprint": decision.policy_hash,
+            "authorized_payload_fingerprint": decision.authorized_payload_hash,
             "external_execution": "not_performed",
         }
     return payload
